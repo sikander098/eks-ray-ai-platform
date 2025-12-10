@@ -3,8 +3,28 @@
 
 This project demonstrates a production-ready Kubernetes platform built for **Distributed AI/ML Workloads**. It replaces manual node management with an intelligent, serverless-like dynamic scaling engine.
 
-![Platform Architecture](https://raw.githubusercontent.com/ray-project/kuberay/master/docs/images/ray_cluster_on_k8s.png)
-*(Conceptual Architecture: KubeRay on EKS)*
+```mermaid
+graph TD
+    User[👩‍💻 Data Scientist] -->|JupyterHub| LB[Load Balancer]
+    LB -->|Spawns| Hub[JupyterHub Pod]
+    Hub -->|Submits Job| RayHead[🧠 Ray Head Node]
+    
+    subgraph EKS Cluster
+        subgraph Compute Plane
+            RayHead -->|Orchestrates| Worker1[👷 Ray Worker (Spot)]
+            RayHead -->|Orchestrates| Worker2[👷 Ray Worker (Spot)]
+        end
+        
+        subgraph Control Plane
+            Karpenter[🏗️ Karpenter] -->|Watches| RayHead
+            Karpenter -->|Provisions| EC2[AWS EC2 API]
+        end
+    end
+    
+    EC2 -->|Creates| Worker1
+    EC2 -->|Creates| Worker2
+```
+*(Architecture: User -> JupyterHub -> Ray Cluster <- Autoscaled by Karpenter)*
 
 ## 🚀 Key Features
 
