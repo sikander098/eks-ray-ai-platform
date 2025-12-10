@@ -40,7 +40,8 @@ graph TD
 
 ### 3. ⚡ High-Performance Networking (Cilium eBPF)
 - **No Kube-Proxy**: Traditional iptables replaced by **eBPF** for O(1) scalability.
-- **Performance**: Lower latency for inter-node communication (critical for parameter server training).
+- **No Kube-Proxy**: Traditional iptables replaced by **eBPF** for O(1) scalability.
+- **Advanced Routing**: Implemented Cilium Native Routing (ENI Mode) to maximize throughput for Ray parameter server traffic, eliminating latency spikes during massive node scale-up events.
 
 ---
 
@@ -76,6 +77,15 @@ Training finished iteration 20. Accuracy: 100%.
 
 ---
 
+## 🔧 Engineering Challenges & Solutions
+
+### The "Circular Dependency" Deadlock
+**Problem**: Upon switching to Cilium (replacing kube-proxy), new Karpenter nodes failed to register (`NotReady`). They couldn't reach the API Server because the CNI wasn't active, but the CNI couldn't start because it couldn't resolve the API Server service IP.
+
+**Solution**: Diagnosed the missing `k8sServiceHost` configuration in the Cilium Helm chart. Performed Terraform state surgery (`terraform import`) to manage the existing Cilium release and injected the Control Plane Endpoint directly, breaking the circular dependency.
+
+---
+
 ## 📂 Project Structure
 
 ```bash
@@ -95,3 +105,24 @@ Training finished iteration 20. Accuracy: 100%.
 
 ## 🎓 How It Works (For Beginners)
 Not sure what all this means? Check out [**Project Explained**](./project_explained.md) for a plain-english breakdown using a "Factory" analogy!
+
+---
+
+## 🚀 Quick Start
+
+### 1. Infrastructure
+```bash
+cd live/dev
+terraform apply
+```
+
+### 2. Access
+```bash
+aws eks update-kubeconfig --name astronomy-dev
+```
+
+### 3. Workload
+```bash
+# Deploy Ray Cluster
+kubectl apply -f k8s/ray/ray-cluster-cpu.yaml
+```
