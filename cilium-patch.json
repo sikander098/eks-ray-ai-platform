@@ -1,0 +1,7 @@
+{
+    "data": {
+        "routing-mode": "native",
+        "tunnel-protocol": "",
+        "auto-direct-node-routes": "true"
+    }
+}

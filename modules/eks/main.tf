@@ -19,6 +19,8 @@ module "eks" {
   # This is required for Karpenter and other AWS integrations
   enable_irsa = true
 
+  access_entries = var.access_entries
+
   # EKS Managed Node Groups
   eks_managed_node_groups = {
     general = {
@@ -62,6 +64,11 @@ module "eks" {
   # Cluster access entry
   # Allow the current caller identity to administer the cluster
   enable_cluster_creator_admin_permissions = true
+  
+  # Node security group tags for Karpenter discovery
+  node_security_group_tags = {
+    "karpenter.sh/discovery" = var.cluster_name
+  }
 
   tags = {
     Environment = var.cluster_name

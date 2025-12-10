@@ -48,3 +48,9 @@ variable "desired_size" {
   type        = number
   default     = 2
 }
+
+variable "access_entries" {
+  description = "Map of access entries to add to the cluster"
+  type        = any
+  default     = {}
+}

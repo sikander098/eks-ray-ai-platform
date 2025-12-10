@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sikander Hameed - Senior Platform Engineer</title>
+    <style>
+        /* --- GLOBAL STYLES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.45;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            font-size: 10.5pt;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px 50px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22pt;
+            color: #0a3d62;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+        }
+
+        .title {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #444;
+            margin: 4px 0;
+        }
+
+        .contact-info {
+            font-size: 10pt;
+            color: #444;
+        }
+
+        .separator {
+            margin: 0 6px;
+            color: #ccc;
+        }
+
+        /* --- SECTION HEADERS --- */
+        h2 {
+            font-size: 11pt;
+            text-transform: uppercase;
+            color: #0a3d62;
+            border-bottom: 2px solid #0a3d62;
+            padding-bottom: 2px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            font-weight: 800;
+            page-break-after: avoid;
+            /* Keep header with next content */
+        }
+
+        /* --- CONTENT BLOCKS --- */
+        .summary {
+            text-align: justify;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        /* --- SKILLS GRID --- */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 40px;
+            row-gap: 8px;
+            margin-bottom: 15px;
+            font-size: 10pt;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: baseline;
+        }
+
+        .skill-category {
+            font-weight: 700;
+            color: #000;
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+
+        .skill-list {
+            flex-grow: 1;
+        }
+
+        /* --- SIGNATURE ACHIEVEMENT BOX --- */
+        .achievement-box {
+            background-color: #f0f7fb;
+            border-left: 5px solid #0056b3;
+            padding: 12px 15px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .achievement-title {
+            font-weight: 700;
+            color: #004494;
+            font-size: 11pt;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .achievement-details {
+            font-size: 10pt;
+            color: #222;
+        }
+
+        /* --- JOB EXPERIENCE --- */
+        .job-entry {
+            margin-bottom: 20px;
+            /* allow breaking so header stays with first part of job */
+            page-break-inside: auto;
+        }
+
+        .job-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: baseline;
+            margin-bottom: 2px;
+            page-break-inside: avoid;
+            page-break-after: avoid;
+            /* Keep header with role line */
+        }
+
+        .company {
+            font-size: 12pt;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .location {
+            font-weight: 400;
+            font-size: 9.5pt;
+            color: #555;
+            text-align: right;
+        }
+
+        .role-line {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            font-style: italic;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 10.5pt;
+            page-break-inside: avoid;
+            page-break-after: avoid;
+            /* Keep role with first block */
+        }
+
+        .dates {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* Functional Sub-sections */
+        .func-block {
+            page-break-inside: avoid;
+            /* Keep the bullet list block together if possible */
+            margin-bottom: 12px;
+        }
+
+        .func-area {
+            font-weight: 700;
+            color: #0a3d62;
+            margin-bottom: 2px;
+            display: block;
+            font-size: 10.5pt;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        li {
+            margin-bottom: 2px;
+            color: #222;
+        }
+
+        /* --- PRINT OPTIMIZATION --- */
+        @page {
+            size: auto;
+            margin: 0.5in 0.6in;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+
+            a {
+                text-decoration: none;
+                color: #0056b3;
+            }
+
+            /* Force H2 to stick to the next element */
+            h2 {
+                page-break-after: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>Sikander Hameed</h1>
+            <div class="title">Senior Platform Engineer | AI Infrastructure & FinOps Specialist | AWS Solutions
+                Architect</div>
+            <div class="contact-info">
+                Islamabad, Pakistan
+                <span class="separator">|</span> +92 311 333 4818
+                <span class="separator">|</span> <a
+                    href="mailto:sikanderhameed098@gmail.com">sikanderhameed098@gmail.com</a>
+                <span class="separator">|</span> <a href="https://linkedin.com/in/sikanderhameed"
+                    target="_blank">LinkedIn</a>
+                <span class="separator">|</span> <a href="https://github.com/sikander098" target="_blank">GitHub</a>
+            </div>
+        </header>
+
+        <section>
+            <h2>Professional Summary</h2>
+            <div class="summary">
+                Senior Platform Engineer with proven expertise architecting autonomous cloud platforms (241M+
+                requests/month, 99.9% uptime). Specialized in <strong>AI Infrastructure optimization ($142K+ annual
+                    savings</strong> via GPU virtualization) and <strong>FinOps engineering (80% cost reduction</strong>
+                via Karpenter). Architected 3 production-grade platforms demonstrating autonomous infrastructure, proven
+                disaster recovery, and cost optimization validated through open-source implementations.
+            </div>
+        </section>
+
+        <section>
+            <h2>Technical Expertise</h2>
+            <div style="line-height: 1.6;">
+                <div style="margin-bottom: 8px;">
+                    <strong>Cloud & Compute:</strong> AWS (Solutions Architect), EKS, AI Platform Engineering,
+                    Karpenter, vLLM, NVIDIA GPU Time-Slicing
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <strong>IaC & Automation:</strong> Crossplane (IDP), Terraform (Modules), CloudFormation, Ansible,
+                    Packer, Python/Bash
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <strong>GitOps & CI/CD:</strong> ArgoCD, Argo Rollouts, GitHub Actions, GitLab CI, Jenkins
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <strong>Observability:</strong> Prometheus, Grafana, Kubecost, Tempo, Mimir, Loki, Jaeger
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <strong>Security:</strong> AWS WAF, IAM (IRSA), Kyverno, External Secrets, Trivy
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <strong>Data Stores:</strong> AWS RDS (Managed), Redis/Valkey, PostgreSQL, Kafka, S3 Intelligent
+                    Tiering
+                </div>
+            </div>
+        </section>
+
+
+        <section>
+            <h2>Professional Experience</h2>
+
+            <div class="job-entry">
+                <div class="job-header">
+                    <span class="company">Priceoye - E-commerce Platform (100K+ DAU)</span>
+                    <span class="location">Islamabad</span>
+                </div>
+                <div class="role-line">
+                    <span>Senior DevOps & Platform Architect | Team: 12 Engineers</span>
+                    <span class="dates">May 2024 – Present</span>
+                </div>
+
+                <div class="func-block">
+                    <span class="func-area">Internal Developer Platform (IDP) & EKS Modernization</span>
+                    <ul>
+                        <li>Re-architected legacy Auto Scaling Groups to <strong>Karpenter</strong>, implementing a
+                            hybrid Spot/On-Demand strategy that reduced node provisioning time by <strong>80%
+                                (&lt;45s)</strong>.</li>
+                        <li>Engineered a <strong>Zero-Touch CI/CD pipeline</strong> using GitHub Actions and ArgoCD.
+                            Implemented automated Git write-back for image tags and enforced <strong>Semantic
+                                Versioning</strong> release gates, ensuring immutable artifact promotion from Dev to
+                            Production.</li>
+                        <li>Eliminated infrastructure bottlenecks by architecting an <strong>Internal Developer Platform
+                                (IDP)</strong> using <strong>Crossplane</strong>. Created Custom Resource Definitions
+                            (XRDs) allowing developers to self-provision AWS RDS and S3 resources via Kubernetes
+                            manifests, reducing provisioning time from 3 days to &lt;10 minutes.</li>
+                        <li>Implemented <strong>Argo Rollouts</strong> for progressive delivery, enabling canary
+                            deployments with automated traffic shifting (20% → 100%) and rollback based on health
+                            metrics.</li>
+                    </ul>
+                </div>
+
+                <div class="func-block">
+                    <span class="func-area">AI Infrastructure & LLMOps (Strategic R&D)</span>
+                    <ul>
+                        <li>Architected a fractional GPU inference system using <strong>NVIDIA Time-Slicing</strong>,
+                            enabling 4 virtual GPU instances per physical card to maximize hardware ROI for future AI
+                            workloads.</li>
+                        <li>Optimized <strong>vLLM</strong> runtime configurations (PagedAttention & Int4 Quantization)
+                            to run <strong>2 concurrent LLM replicas</strong> on constrained VRAM, achieving
+                            <strong>200% pod density</strong> and validating a <strong>50% cost-reduction
+                                strategy</strong>.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="func-block">
+                    <span class="func-area">FinOps, Security & Resilience</span>
+                    <ul>
+                        <li>Reduced total cloud bill by <strong>55% ($22.2K/yr)</strong> by leading a multi-cloud cost
+                            reduction strategy and implementing <strong>Kubecost</strong> for granular namespace
+                            chargebacks.</li>
+                        <li>Designed a fail-safe Disaster Recovery strategy using <strong>Velero</strong> (S3 backups)
+                            and validated resilience via <strong>LitmusChaos</strong> protocols, proving a Recovery Time
+                            Objective (RTO) of &lt;15 minutes during simulated regional failures.</li>
+                        <li>Architected a Zero-Trust framework using <strong>AWS WAF with ML-based detection</strong>,
+                            blocking <strong>6.75M+ threats/month</strong> and mitigating Layer 7 DDoS attacks.</li>
+                        <li>Enforced <strong>Policy-as-Code</strong> using Kyverno, blocking deployments violating
+                            security policies (root user, excessive resources) and automated <strong>CVE
+                                scanning</strong> via Trivy.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="job-entry">
+                <div class="job-header">
+                    <span class="company">Anread - Cloud Consultancy</span>
+                    <span class="location">Remote</span>
+                </div>
+                <div class="role-line">
+                    <span>AWS Cloud Engineer</span>
+                    <span class="dates">Feb 2024 – May 2024</span>
+                </div>
+                <ul>
+                    <li>Led zero-downtime migration of 3 legacy monoliths to microservices on AWS, reducing
+                        infrastructure costs by <strong>25%</strong> via reserved instances and rightsizing.</li>
+                    <li>Developed modular CloudFormation libraries standardizing provisioning across 5 client projects,
+                        cutting deployment lead times by <strong>70%</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="job-entry">
+                <div class="job-header">
+                    <span class="company">Techception - Software Agency</span>
+                    <span class="location">Remote</span>
+                </div>
+                <div class="role-line">
+                    <span>DevOps Engineer</span>
+                    <span class="dates">Jan 2023 – Feb 2024</span>
+                </div>
+                <ul>
+                    <li>Containerized 5+ microservices on Kubernetes achieving <strong>99.9% uptime</strong>, resolving
+                        environment inconsistencies across development and production.</li>
+                    <li>Engineered resilient CI/CD pipelines with GitHub Actions, reducing deployment failures by
+                        <strong>30%</strong> and standardizing release processes.</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <section>
+            <h2>Open Source Portfolio</h2>
+
+            <div class="job-entry">
+                <div class="job-header">
+                    <span class="company">Open Source Platform Engineering Projects</span>
+                    <span class="dates">2024</span>
+                </div>
+                <ul>
+                    <li><a href="https://github.com/sikander098/eks-autonomous-platform" target="_blank"><strong>EKS
+                                Autonomous Platform</strong></a>: Achieved <strong>80% cost reduction</strong> via
+                        Karpenter, KEDA (scale-to-zero), Spot optimization, EventBridge self-healing, Argo Rollouts,
+                        Jaeger tracing, and Kyverno/Trivy security.</li>
+                    <li><a href="https://github.com/sikander098/fractional-gpu-k8s-inference"
+                            target="_blank"><strong>Fractional GPU Inference</strong></a>: AI infrastructure achieving
+                        <strong>2x throughput</strong> and <strong>60% GPU utilization</strong> via NVIDIA time-slicing,
+                        validating <strong>$120K+ annual savings</strong>.
+                    </li>
+                    <li><a href="https://github.com/sikander098/astronomy-platform" target="_blank"><strong>Astronomy
+                                Platform</strong></a>: Multi-environment platform with <strong>1,200+ lines of
+                            Terraform</strong>, Crossplane self-service provisioning, and tested DR (<strong>RTO
+                            &lt;15min</strong>).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Education & Certifications</h2>
+            <div class="job-entry">
+                <div class="job-header">
+                    <span class="company">B.S. Electrical Engineering, COMSATS University</span>
+                    <span class="dates">2023</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <strong>Certifications:</strong>
+                <a href="https://www.credly.com/badges/e1eaae9d-47fe-43e8-96cb-d16b47cc9f9e" target="_blank"
+                    style="font-weight: 500; color: #333;">
+                    AWS Certified Solutions Architect – Associate (2025)
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+
+</html>

@@ -17,6 +17,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.25"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 
   # S3 backend for remote state storage
@@ -83,6 +87,7 @@ module "vpc" {
 
   vpc_cidr         = "10.0.0.0/16"
   environment_name = "dev"
+  cluster_name     = "astronomy-dev"
   az_count         = 2
 }
 
@@ -149,3 +154,88 @@ output "velero_iam_role_arn" {
   description = "ARN of the IAM role for Velero"
   value       = module.velero.iam_role_arn
 }
+
+# Karpenter Module
+module "karpenter" {
+  source = "../../modules/karpenter"
+  
+  cluster_name      = module.eks.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.cluster_oidc_issuer_url
+  cluster_endpoint  = module.eks.cluster_endpoint
+  
+  tags = {
+    Environment = "dev"
+    Project     = "astronomy"
+    ManagedBy   = "Terraform"
+  }
+  
+  depends_on = [module.eks]
+}
+
+# Karpenter Outputs
+output "karpenter_controller_role_arn" {
+  description = "ARN of the Karpenter controller IAM role"
+  value       = module.karpenter.controller_role_arn
+}
+
+output "karpenter_node_instance_profile" {
+  description = "Name of the Karpenter node instance profile"
+  value       = module.karpenter.node_instance_profile_name
+}
+
+output "karpenter_node_role_name" {
+  description = "Name of the Karpenter node IAM role"
+  value       = module.karpenter.node_role_name
+}
+
+# Observability Stack (LGTM: Loki, Grafana, Tempo, Mimir/Prometheus)
+module "observability" {
+  source = "../../modules/observability"
+  
+  cluster_name                 = module.eks.cluster_name
+  enable_grafana_loadbalancer  = true
+  prometheus_retention         = "15d"
+  prometheus_storage_size      = "50Gi"
+  loki_storage_size            = "30Gi"
+  oidc_provider_arn            = module.eks.oidc_provider_arn
+  
+  tags = {
+    Environment = "dev"
+    Project     = "astronomy"
+    ManagedBy   = "Terraform"
+  }
+}
+
+# Observability Outputs
+output "grafana_admin_password" {
+  description = "Grafana admin password (sensitive)"
+  value       = module.observability.grafana_admin_password
+  sensitive   = true
+}
+
+output "grafana_url_command" {
+  description = "Command to get Grafana URL"
+  value       = module.observability.grafana_url_command
+}
+
+output "prometheus_endpoint" {
+  description = "Prometheus endpoint"
+  value       = module.observability.prometheus_endpoint
+}
+
+output "loki_endpoint" {
+  description = "Loki endpoint"
+  value       = module.observability.loki_endpoint
+}
+
+output "tempo_otlp_grpc_endpoint" {
+  description = "Tempo OTLP gRPC endpoint for traces"
+  value       = module.observability.tempo_otlp_grpc_endpoint
+}
+
+output "tempo_otlp_http_endpoint" {
+  description = "Tempo OTLP HTTP endpoint for traces"
+  value       = module.observability.tempo_otlp_http_endpoint
+}
+

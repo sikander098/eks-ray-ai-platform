@@ -1,0 +1,99 @@
+---
+# Default NodePool for general-purpose workloads
+# This allows Karpenter to scale on-demand nodes for non-GPU workloads
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: default-pool
+spec:
+  template:
+    metadata:
+      labels:
+        node-type: general
+    
+    spec:
+      # Node class reference
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default-node-class
+      
+      # No taints - accept all workloads
+      taints: []
+      
+      # Requirements for instance selection
+      requirements:
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+        
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["on-demand", "spot"]
+        
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["c", "m", "r", "t"]
+        
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: ["4"]
+  
+  # Limits for this NodePool
+  limits:
+    cpu: "100"
+    memory: "200Gi"
+  
+  # Disruption budget
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 30s
+
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: default-node-class
+spec:
+  # AMI Selection - Use EKS optimized AMI
+  amiSelectorTerms:
+    - alias: al2@latest
+  
+  # Subnet Discovery - Use Karpenter discovery tags
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: astronomy-dev
+  
+  # Security Group Discovery
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: astronomy-dev
+  
+  # IAM Role
+  role: astronomy-dev-karpenter-node
+  
+  # Root volume configuration
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 50Gi
+        volumeType: gp3
+        iops: 3000
+        throughput: 125
+        encrypted: true
+        deleteOnTermination: true
+  
+  # User data for node initialization
+  userData: |
+    #!/bin/bash
+    # Standard EKS node initialization
+    /etc/eks/bootstrap.sh astronomy-dev
+  
+  # Tags
+  tags:
+    Name: astronomy-default-node
+    ManagedBy: karpenter
+    Environment: dev

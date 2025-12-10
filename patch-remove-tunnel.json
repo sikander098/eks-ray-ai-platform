@@ -1,0 +1,6 @@
+[
+    {
+        "op": "remove",
+        "path": "/data/tunnel-protocol"
+    }
+]

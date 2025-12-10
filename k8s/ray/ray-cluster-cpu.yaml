@@ -1,0 +1,52 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: ray-cluster-kuberay
+  namespace: ray-system
+spec:
+  rayVersion: '2.9.0'
+  headGroupSpec:
+    # The head group does not typically scale, so we can use a smaller stable instance or spot
+    serviceType: ClusterIP
+    rayStartParams:
+      dashboard-host: '0.0.0.0'
+    template:
+      spec:
+        containers:
+        - name: ray-head
+          image: rayproject/ray:2.9.0
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "1"
+              memory: "2Gi"
+        # Node selector or tolerations if we want to pin head node? 
+        # For now, let it float.
+        
+  workerGroupSpecs:
+  # This worker group is designed to trigger Karpenter scaling for Compute Optimized nodes
+  - replicas: 1
+    minReplicas: 0
+    maxReplicas: 10
+    groupName: small-group
+    rayStartParams: {}
+    template:
+      spec:
+        containers:
+        - name: ray-worker
+          image: rayproject/ray:2.9.0
+          resources:
+            # Requesting enough to justify an m5.large/c5.large
+            # m5.large = 2 vCPU, 8 GiB RAM
+            # We request slightly less to fit system overhead
+            limits:
+              cpu: "1500m"
+              memory: "6Gi"
+            requests:
+              cpu: "1500m"
+              memory: "6Gi"
+        # Ensure we schedule on Karpenter provisioned nodes if possible
+        nodeSelector:
+          karpenter.sh/capacity-type: spot

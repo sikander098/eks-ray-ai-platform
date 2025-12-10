@@ -1,0 +1,135 @@
+---
+# EC2NodeClass - Hardware Configuration for GPU Nodes
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: gpu-node-class
+spec:
+  # AMI Family - Amazon Linux 2 GPU Optimized
+  amiFamily: AL2
+  
+  # AMI Selector - Use GPU-optimized AMIs
+  amiSelectorTerms:
+    - alias: al2@latest
+  
+  # Subnet Discovery - Use Karpenter discovery tags
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: astronomy-dev
+  
+  # Security Group Discovery
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: astronomy-dev
+  
+  # Instance Profile - Use the Karpenter node instance profile
+  role: astronomy-dev-karpenter-node
+  
+  # Root Volume Configuration - 100GB for model caching
+  blockDeviceMappings:
+    - deviceName: /dev/xvda
+      ebs:
+        volumeSize: 100Gi
+        volumeType: gp3
+        encrypted: true
+        deleteOnTermination: true
+        # gp3 performance settings
+        iops: 3000
+        throughput: 125
+  
+  # User Data - Install NVIDIA drivers and configure containerd
+  userData: |
+    #!/bin/bash
+    # Install NVIDIA drivers
+    yum install -y nvidia-driver-latest-dkms
+    yum install -y cuda-drivers
+    
+    # Install nvidia-container-toolkit
+    distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+    curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.repo | \
+      tee /etc/yum.repos.d/nvidia-container-toolkit.repo
+    yum install -y nvidia-container-toolkit
+    
+    # Configure containerd for NVIDIA runtime
+    nvidia-ctk runtime configure --runtime=containerd
+    systemctl restart containerd
+  
+  # Tags for GPU nodes
+  tags:
+    Name: astronomy-gpu-node
+    NodeType: gpu
+    ManagedBy: Karpenter
+    Environment: dev
+
+---
+# NodePool - Scheduling Logic for GPU Workloads
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-pool
+spec:
+  # Reference to EC2NodeClass
+  template:
+    metadata:
+      # Labels for GPU nodes
+      labels:
+        workload-type: gpu
+        node-type: gpu
+    
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: gpu-node-class
+      
+      # Instance Type Requirements
+      requirements:
+        # GPU Instance Types - Cost-efficient T4 and high-performance A10G
+        - key: karpenter.k8s.aws/instance-family
+          operator: In
+          values:
+            - g4dn  # NVIDIA T4
+            - g5    # NVIDIA A10G
+        
+        - key: karpenter.k8s.aws/instance-size
+          operator: In
+          values:
+            - xlarge
+            - 2xlarge
+        
+        # Capacity Type - Prefer Spot for cost savings
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            - spot
+            - on-demand
+        
+        # Architecture
+        - key: kubernetes.io/arch
+          operator: In
+          values:
+            - amd64
+        
+        # Operating System
+        - key: kubernetes.io/os
+          operator: In
+          values:
+            - linux
+      
+      # Taints - Protect GPU nodes from non-GPU workloads
+      taints:
+        - key: nvidia.com/gpu
+          value: "true"
+          effect: NoSchedule
+  
+  # Limits - Prevent runaway scaling
+  limits:
+    cpu: "100"
+  
+  # Disruption Budget - Control how nodes are consolidated
+  disruption:
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    consolidateAfter: 30s
+  
+  # Weight - Priority for this NodePool
+  weight: 10

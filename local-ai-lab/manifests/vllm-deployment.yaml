@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phi-3-mini
+  namespace: ai-inference
+spec:
+  replicas: 2  # FinOps optimized: 30% GPU util × 2 = 60% total
+  selector:
+    matchLabels:
+      app: phi-3-mini
+  template:
+    metadata:
+      labels:
+        app: phi-3-mini
+    spec:
+      containers:
+      - name: vllm
+        image: vllm/vllm-openai:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: HUGGING_FACE_HUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token
+              key: token
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+        resources:
+          limits:
+            memory: "4Gi" # Approximate limit
+            # nvidia.com/gpu: 1  <-- Removed to bypass failing device plugin
+        command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+        args:
+        - "--model"
+        - "wangyiqun/Phi-3-mini-4k-instruct-awq"
+        - "--quantization"
+        - "awq"
+        - "--dtype"
+        - "half"
+        - "--gpu-memory-utilization"
+        - "0.30"     # FinOps: 30% × 2 pods = 60%, leaves 3GB buffer
+        - "--max-model-len"
+        - "1024"     # FinOps: Smaller context = smaller KV cache
+        - "--trust-remote-code"
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: shm
+          mountPath: /dev/shm
+      volumes:
+      - name: shm
+        emptyDir:
+          medium: Memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phi-3-service
+  namespace: ai-inference
+spec:
+  type: NodePort
+  selector:
+    app: phi-3-mini
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 30080

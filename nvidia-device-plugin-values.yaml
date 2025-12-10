@@ -1,0 +1,10 @@
+# NVIDIA Device Plugin Configuration
+# Enable time-slicing to split 1 physical GPU into 4 virtual GPUs
+
+config:
+  map:
+    default: |-
+      version: v1
+      sharing:
+        timeSlicing:
+          replicas: 4

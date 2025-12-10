@@ -1,0 +1,32 @@
+# JupyterHub Custom Values
+hub:
+  config:
+    Authenticator:
+      admin_users:
+        - admin
+    DummyAuthenticator:
+      password: "password"
+    JupyterHub:
+      authenticator_class: dummy
+
+proxy:
+  service:
+    type: LoadBalancer
+
+singleuser:
+  image:
+    name: rayproject/ray
+    tag: "2.9.0"
+  # Mount the same Ray image so we have client libraries
+  cmd: ["jupyterhub-singleuser"]
+  
+  extraEnv:
+    # Point to the Ray Head Service in ray-system namespace
+    RAY_ADDRESS: "ray://ray-cluster-kuberay-head-svc.ray-system.svc.cluster.local:10001"
+    
+  profileList:
+    - display_name: "Default Environment (Ray Client)"
+      default: true
+      kubespawner_override:
+        cpu_limit: 1
+        mem_limit: 2G
