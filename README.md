@@ -11,8 +11,8 @@ graph TD
     
     subgraph EKS Cluster
         subgraph Compute Plane
-            RayHead -->|Orchestrates| Worker1[👷 Ray Worker (Spot)]
-            RayHead -->|Orchestrates| Worker2[👷 Ray Worker (Spot)]
+            RayHead -->|Orchestrates| Worker1["👷 Ray Worker (Spot)"]
+            RayHead -->|Orchestrates| Worker2["👷 Ray Worker (Spot)"]
         end
         
         subgraph Control Plane
